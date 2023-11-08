@@ -1,12 +1,12 @@
 {
   "dependencies": {
+    "express": "^4.18.2",
     "npm": "^10.2.3"
   },
   "name": "diplom",
   "version": "1.0.0",
   "description": "program for diplom",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
