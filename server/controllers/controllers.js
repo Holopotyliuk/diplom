@@ -1,7 +1,10 @@
 const models = require('../models/models')
 class Info {
-    read(req, res) {
-        return models.read(req, res);
+    registration(req, res) {
+        return models.registration(req, res);
+    }
+    authorization(req, res) {
+        return models.authorization(req, res);
     }
 }
 module.exports = new Info()
