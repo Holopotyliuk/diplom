@@ -1,6 +1,14 @@
-const { check } = require('express-validator');
 const pool = require('../connection/connection')
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { secret } = require('../config/config')
+const generateAccessToken = (id, name) => {
+    const payload = {
+        id,
+        name
+    }
+    return jwt.sign(payload, secret, { expiresIn: "2h" });
+}
 async function registration(req, res) {
     try {
         const check = checkRequest(req);
@@ -30,7 +38,8 @@ async function authorization(req, res) {
         if (userCheck.rows.length !== 0) {
             const validPassword = bcrypt.compareSync(password, userCheck.rows[0].password);
             if (validPassword) {
-                res.json('true')
+                const token = generateAccessToken(userCheck.rows[0].id, userCheck.rows[0].name);
+                return res.json({ token });
             } else {
                 res.status(400).json({ message: `Не правильний пароль` })
             }
@@ -48,7 +57,7 @@ function checkRequest(req) {
         status: 0,
         message: ''
     };
-    
+
     if (name) {
         check.status = true
     } else {
