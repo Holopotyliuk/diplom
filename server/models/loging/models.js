@@ -1,7 +1,7 @@
-const pool = require('../connection/connection')
+const pool = require('../../connection/connection')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { secret } = require('../config/config')
+const { secret } = require('../../config/config')
 const generateAccessToken = (id, name) => {
     const payload = {
         id,
@@ -39,7 +39,11 @@ async function authorization(req, res) {
             const validPassword = bcrypt.compareSync(password, userCheck.rows[0].password);
             if (validPassword) {
                 const token = generateAccessToken(userCheck.rows[0].id, userCheck.rows[0].name);
-                return res.json({ token });
+                const response = {
+                    status: true,
+                    token: token
+                };
+                return res.json(response);
             } else {
                 res.status(400).json({ message: `Не правильний пароль` })
             }
