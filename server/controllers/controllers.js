@@ -7,8 +7,11 @@ class Info {
     authorization(req, res) {
         return models.authorization(req, res);
     }
-    getInfo(req, res) {
-        return home.getInfo(req, res);
+    getChatTable(req, res) {
+        return home.getChatTable(req, res);
+    }
+    addChat(req, res) {
+        return home.addChat(req, res);
     }
 }
 module.exports = new Info()

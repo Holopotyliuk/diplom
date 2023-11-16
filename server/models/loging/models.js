@@ -2,10 +2,11 @@ const pool = require('../../connection/connection')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { secret } = require('../../config/config')
-const generateAccessToken = (id, name) => {
+const generateAccessToken = (id, name, login) => {
     const payload = {
         id,
-        name
+        name,
+        login
     }
     return jwt.sign(payload, secret, { expiresIn: "2h" });
 }
@@ -19,6 +20,20 @@ async function registration(req, res) {
             if (userCheck.rows.length == 0) {
                 const user = await pool.query('insert into users (name, login, password) values ($1, $2, $3) returning *',
                     [name, login, hashPassword]);
+                // console.log(user.rows[0].id)
+                const tableName = `chatlist${user.rows[0].id}`;
+                const createTableQuery = `
+                    CREATE TABLE ${tableName} (
+                    id serial PRIMARY KEY,
+                    name varchar(255),
+                    login varchar(255),
+                    hash varchar(255)
+                  )
+              `;
+
+                const chatTable = await pool.query(createTableQuery);
+                //const chatTable = await pool.query('create table ${table} (id serial, name varchar(255), login varchar (255), hash varchar(255))',
+                //     [user.rows[0].id]);
                 res.json(user.rows)
             } else {
                 res.status(400).json({ message: `Користувач вже існує` })
@@ -38,12 +53,13 @@ async function authorization(req, res) {
         if (userCheck.rows.length !== 0) {
             const validPassword = bcrypt.compareSync(password, userCheck.rows[0].password);
             if (validPassword) {
-                const token = generateAccessToken(userCheck.rows[0].id, userCheck.rows[0].name);
+                const token = generateAccessToken(userCheck.rows[0].id, userCheck.rows[0].name, userCheck.rows[0].login);
                 const response = {
                     status: true,
                     token: token
                 };
                 return res.json(response);
+
             } else {
                 res.status(400).json({ message: `Не правильний пароль` })
             }
