@@ -13,5 +13,11 @@ class Info {
     addChat(req, res) {
         return home.addChat(req, res);
     }
+    getMessage(req, res) {
+        return home.getMessage(req, res);
+    }
+    sendMessage(req, res) {
+        return home.sendMessage(req, res);
+    }
 }
 module.exports = new Info()

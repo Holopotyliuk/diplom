@@ -6,6 +6,4 @@ const routesHome = require('./routesHome/routesHome');
 router.use('/registration', controller.registration)
 router.use('/authorization', controller.authorization)
 router.use('/home', middleware, routesHome);
-//router.use('/home', middleware, controller.getChatTable)
-//router.use('/home/addchat', middleware, routesHome)
 module.exports = router;
