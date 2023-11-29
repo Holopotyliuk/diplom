@@ -1,5 +1,8 @@
 const pool = require('../../connection/connection')
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const fs = require('fs');
+//const upload = multer({ dest: 'uploads/', limits: { fileSize: 1024 * 1024 } });
 async function getChatTable(req, res) {
     const { user, token } = req;
     try {
@@ -90,8 +93,7 @@ async function sendMessage(req, res) {
     try {
         const name = `chatlist${id}`;
         const getTableName = await pool.query(`select hash from ${name} where id=$1`, [idChat]);
-        const tableName = getTableName.rows[0].hash
-        console.log(tableName)
+        const tableName = getTableName.rows[0].hash;
         const sendMessage = await pool.query(`insert into "${tableName}" (userid, text) values ($1, $2) returning *`, [id, message]);
         res.json(sendMessage.rows);
         console.log(sendMessage.rows)
@@ -99,4 +101,30 @@ async function sendMessage(req, res) {
         console.log(error)
     }
 }
-module.exports = { getChatTable, addChat, getMessage, sendMessage }
+async function sendFile(req, res) {
+    try {
+        const storage = multer.memoryStorage(); // Зберігаємо файл у пам'яті, а не на диску
+        const upload = multer({ storage: storage });
+        // Викликайте middleware upload.single('file') перед обробкою запиту
+        upload.single('file')(req, res, (err) => {
+            if (err) {
+                console.error('Помилка при завантаженні файлу:', err);
+                return res.status(400).send('Помилка при завантаженні файлу.');
+            }
+
+            const uploadedFile = req.file;
+            const fileBuffer = req.file.buffer;
+            const filePath = 'D:/Нова папка (2)/text.txt';
+            fs.writeFileSync(filePath, fileBuffer);
+            if (!uploadedFile) {
+                return res.status(400).send('Файл не було завантажено.');
+            }
+
+            res.status(200).send('Файл успішно завантажено.');
+        });
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+module.exports = { getChatTable, addChat, getMessage, sendMessage, sendFile }

@@ -19,5 +19,8 @@ class Info {
     sendMessage(req, res) {
         return home.sendMessage(req, res);
     }
+    sendFile(req, res) {
+        return home.sendFile(req, res);
+    }
 }
 module.exports = new Info()

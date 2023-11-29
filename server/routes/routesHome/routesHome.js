@@ -5,4 +5,5 @@ router.get('/', controller.getChatTable);
 router.get('/message', controller.getMessage);
 router.post('/addchat', controller.addChat);
 router.post('/sendmessage', controller.sendMessage);
+router.post('/sendfile', controller.sendFile);
 module.exports = router;
